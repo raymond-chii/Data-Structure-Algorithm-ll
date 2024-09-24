@@ -1,14 +1,17 @@
+CXX = g++
+CXXFLAGS = -std=c++11
+
 spell.exe: spellcheck.o hash.o
-	g++ -o spell.exe spellcheck.o hash.o
+	$(CXX) $(CXXFLAGS) -o spell.exe spellcheck.o hash.o
 
 spellcheck.o: spellcheck.cpp hash.h
-	g++ -c spellcheck.cpp
+	$(CXX) $(CXXFLAGS) -c spellcheck.cpp
 
 hash.o: hash.cpp hash.h
-	g++ -c hash.cpp
+	$(CXX) $(CXXFLAGS) -c hash.cpp
 
-debug:
-	g++ -g -o spellDebug.exe spellcheck.cpp hash.cpp
+debug: CXXFLAGS += -g
+debug: spell.exe
 
 clean:
 	rm -f *.exe *.o *.stackdump *~
