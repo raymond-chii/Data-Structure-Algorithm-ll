@@ -1,4 +1,0 @@
-*.txt filter=lfs diff=lfs merge=lfs -text
-*.csv filter=lfs diff=lfs merge=lfs -text
-benchmarkData/cleaned_dictionary.txt filter=lfs diff=lfs merge=lfs -text
-benchmarkData/ngram_freq.csv filter=lfs diff=lfs merge=lfs -text
