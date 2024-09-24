@@ -1,3 +1,5 @@
 *.o
 *.vscode
 benchmarkData/
+benchmarkData/cleaned_dictionary.txt
+benchmarkData/ngram_freq.csv
