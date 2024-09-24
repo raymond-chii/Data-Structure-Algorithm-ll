@@ -11,7 +11,7 @@ bool isValidWord(const std::string& word);
 
 int main() {
     std::string dictionaryFile, documentFile, outputFile;
-    hashTable dictionary(50000);
+    hashTable dictionary(10000);
 
     // Prompt for file names
     std::cout << "Enter name of dictionary: ";

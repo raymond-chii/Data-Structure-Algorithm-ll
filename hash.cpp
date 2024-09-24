@@ -80,21 +80,33 @@ bool hashTable::contains(const std::string &key){
 }
 
 bool hashTable::rehash() {
-    int newCapacity = getPrime(capacity * 2);
-    std::vector<hashItem> newData(newCapacity);
+    unsigned int new_size_min = capacity * 2; // Double the current capacity
+    unsigned int new_prime = getPrime(new_size_min);
 
-    for (const auto &item : data) {
+    std::vector<hashItem> old_data = std::move(data); // Move old data to temporary vector
+    
+    // Reset the hash table
+    data.clear();
+    filled = 0;
+    capacity = new_prime;
+    data.resize(capacity);
+
+    // Reinsert all occupied items from old data
+    for (const hashItem &item : old_data) {
         if (item.isOccupied) {
-            int newPos = hash(item.key) % newCapacity;
-            while (newData[newPos].isOccupied) {
-                newPos = (newPos + 1) % newCapacity;
+            int result = insert(item.key, item.pv);
+            if (result != 0) {
+                // If insertion fails, rollback to old state
+                data = std::move(old_data);
+                return false;
             }
-            newData[newPos] = std::move(item);
         }
     }
 
-    data = std::move(newData);
-    capacity = newCapacity;
-
-    return true;
+    // Check if rehash was successful
+    if (filled < (capacity * 0.6)) {
+        return true;
+    } else {
+        return false;
+    }
 }
