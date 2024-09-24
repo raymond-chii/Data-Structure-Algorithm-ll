@@ -10,32 +10,38 @@ void spellCheckDocument(const std::string& inputFilename, const std::string& out
 bool isValidWord(const std::string& word);
 
 int main() {
-    std::string dictionaryFile, inputFile, outputFile;
+    std::string dictionaryFile, documentFile, outputFile;
     hashTable dictionary(50000);
 
-    // Prompt for dictionary file
+    // Prompt for file names
     std::cout << "Enter name of dictionary: ";
     std::cin >> dictionaryFile;
 
-    // Load dictionary and measure time
-    auto start = std::chrono::high_resolution_clock::now();
+    // Measure dictionary loading time
+    clock_t start = clock();
     loadDictionary(dictionaryFile, dictionary);
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> diff = end - start;
-    std::cout << "Total time (in seconds) to load dictionary: " << diff.count() << std::endl;
+    clock_t end = clock();
 
-    // Prompt for input and output files
+    std::cout << "Total time (in seconds) to load dictionary: " 
+              << std::fixed << std::setprecision(5) 
+              << double(end - start) / CLOCKS_PER_SEC 
+              << " seconds" << std::endl;
+
     std::cout << "Enter name of input file: ";
-    std::cin >> inputFile;
+    std::cin >> documentFile;
+
     std::cout << "Enter name of output file: ";
     std::cin >> outputFile;
 
-    // Spell check the document and measure time
-    start = std::chrono::high_resolution_clock::now();
-    spellCheckDocument(inputFile, outputFile, dictionary);
-    end = std::chrono::high_resolution_clock::now();
-    diff = end - start;
-    std::cout << "Total time (in seconds) to check document: " << diff.count() << std::endl;
+    // Measure spell checking time 
+    start = clock();
+    spellCheckDocument(documentFile, outputFile, dictionary);
+    end = clock();
+
+    std::cout << "Total time (in seconds) to check document: " 
+              << std::fixed << std::setprecision(5) 
+              << double(end - start) / CLOCKS_PER_SEC 
+              << " seconds" << std::endl;
 
     return 0;
 }
@@ -75,7 +81,6 @@ void spellCheckDocument(const std::string& inputFilename, const std::string& out
                 word += c;
                 inWord = true;
             } else if (inWord) {
-                // Word ended, check it
                 if (word.length() > 20) {
                     outputFile << "Long word at line " << lineNumber << ", starts: " << word.substr(0, 20) << std::endl;
                 } else if (!std::any_of(word.begin(), word.end(), ::isdigit) && !dictionary.contains(word)) {
