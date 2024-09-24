@@ -7,8 +7,8 @@ hashTable::hashTable(int size){
 }
 
 unsigned int hashTable::getPrime(int size){
-    static const std::array<unsigned int, 12> primes = {1949, 7877, 11551, 52639, 220579, 
-        500069, 700319, 800647, 1000099, 3000073, 6000641, 9001481};
+    static const std::array<unsigned int, 12> primes = {1949, 7877, 11717, 52631, 220579, 
+        500069, 700319, 800647, 1000003, 3000073, 6002131, 9003487};
     for (unsigned int prime : primes){
         if (prime >= size){
             return prime;

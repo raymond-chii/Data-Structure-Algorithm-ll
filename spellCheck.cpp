@@ -5,7 +5,6 @@
 #include <chrono>
 #include "hash.h"
 
-// Function prototypes
 void loadDictionary(const std::string& filename, hashTable& dictionary);
 void spellCheckDocument(const std::string& inputFilename, const std::string& outputFilename, hashTable& dictionary);
 bool isValidWord(const std::string& word);
