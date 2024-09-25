@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <cctype>
-#include <chrono>
 #include "hash.h"
 
 void loadDictionary(const std::string& filename, hashTable& dictionary);
@@ -11,13 +10,11 @@ bool isValidWord(const std::string& word);
 
 int main() {
     std::string dictionaryFile, documentFile, outputFile;
-    hashTable dictionary(10000);
+    hashTable dictionary(50000);
 
-    // Prompt for file names
     std::cout << "Enter name of dictionary: ";
     std::cin >> dictionaryFile;
 
-    // Measure dictionary loading time
     clock_t start = clock();
     loadDictionary(dictionaryFile, dictionary);
     clock_t end = clock();
@@ -33,7 +30,6 @@ int main() {
     std::cout << "Enter name of output file: ";
     std::cin >> outputFile;
 
-    // Measure spell checking time 
     start = clock();
     spellCheckDocument(documentFile, outputFile, dictionary);
     end = clock();
@@ -51,12 +47,11 @@ void loadDictionary(const std::string& filename, hashTable& dictionary) {
     std::string word;
     
     while (std::getline(file, word)) {
-        // Convert word to lowercase
+
         for (char& c : word) {
             c = std::tolower(c);
         }
         
-        // Insert valid words into the hash table
         if (isValidWord(word) && word.length() <= 20) {
             dictionary.insert(word);
         }

@@ -7,8 +7,8 @@ hashTable::hashTable(int size){
 }
 
 unsigned int hashTable::getPrime(int size){
-    static const std::array<unsigned int, 12> primes = {1949, 7877, 11717, 52631, 220579, 
-        500069, 700319, 800647, 1000003, 3000073, 6002131, 9003487};
+    static const std::array<unsigned int, 12> primes = {1913, 7247, 11717, 52631, 220579, 
+        504181, 721291, 826549, 999983, 3000073, 6002131, 9003487};
     for (unsigned int prime : primes){
         if (prime >= size){
             return prime;
@@ -83,7 +83,7 @@ bool hashTable::rehash() {
     unsigned int new_size_min = capacity * 2; // Double the current capacity
     unsigned int new_prime = getPrime(new_size_min);
 
-    std::vector<hashItem> old_data = std::move(data); // Move old data to temporary vector
+    std::vector<hashItem> old_data = std::move(data);
     
     // Reset the hash table
     data.clear();
@@ -91,12 +91,11 @@ bool hashTable::rehash() {
     capacity = new_prime;
     data.resize(capacity);
 
-    // Reinsert all occupied items from old data
     for (const hashItem &item : old_data) {
         if (item.isOccupied) {
             int result = insert(item.key, item.pv);
             if (result != 0) {
-                // If insertion fails, rollback to old state
+
                 data = std::move(old_data);
                 return false;
             }
