@@ -1,0 +1,28 @@
+name: C++ Linter
+
+on: 
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run clang-tidy
+      uses: cpp-linter/cpp-linter-action@v2
+      id: linter
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        style: file
+        tidy-checks: ''
+        files-changed-only: true
+
+    - name: Fail fast?!
+      if: steps.linter.outputs.checks-failed > 0
+      run: exit 1
