@@ -111,7 +111,7 @@ bool hashTable::rehash() {
 }
 
 void *hashTable::getPointer(const std::string &key, bool *b) {
-    int pos = findPos(key);
+    unsigned int pos = findPos(key);
     
     if (pos == -1 || data[pos].isDeleted) {
         if (b != nullptr) {
@@ -127,7 +127,7 @@ void *hashTable::getPointer(const std::string &key, bool *b) {
 }
 
 int hashTable::setPointer(const std::string &key, void *pv) {
-    int pos = findPos(key);
+    unsigned int pos = findPos(key);
     
     if (pos == -1 || data[pos].isDeleted) {
         return 1;  // Key not found
@@ -138,7 +138,7 @@ int hashTable::setPointer(const std::string &key, void *pv) {
 }
 
 bool hashTable::remove(const std::string &key) {
-    int pos = findPos(key);
+    unsigned int pos = findPos(key);
     
     if (pos == -1 || data[pos].isDeleted) {
         return false;  // Key not found
