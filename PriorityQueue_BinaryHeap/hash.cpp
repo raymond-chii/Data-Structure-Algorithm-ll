@@ -109,3 +109,42 @@ bool hashTable::rehash() {
         return false;
     }
 }
+
+void *hashTable::getPointer(const std::string &key, bool *b) {
+    int pos = findPos(key);
+    
+    if (pos == -1 || data[pos].isDeleted) {
+        if (b != nullptr) {
+            *b = false;
+        }
+        return nullptr;
+    }
+    
+    if (b != nullptr) {
+        *b = true;
+    }
+    return data[pos].pv;
+}
+
+int hashTable::setPointer(const std::string &key, void *pv) {
+    int pos = findPos(key);
+    
+    if (pos == -1 || data[pos].isDeleted) {
+        return 1;  // Key not found
+    }
+    
+    data[pos].pv = pv;
+    return 0;  // Success
+}
+
+bool hashTable::remove(const std::string &key) {
+    int pos = findPos(key);
+    
+    if (pos == -1 || data[pos].isDeleted) {
+        return false;  // Key not found
+    }
+    
+    // Lazy deletion
+    data[pos].isDeleted = true;
+    return true;
+}
