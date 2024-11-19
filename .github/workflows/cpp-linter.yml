@@ -1,27 +1,39 @@
 name: C++ Linter
 
-on: 
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    
     - name: Run clang-tidy
       uses: cpp-linter/cpp-linter-action@v2
       id: linter
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        style: file
-        tidy-checks: ''
+        style: llvm
+        tidy-checks: >
+          *,
+          -modernize-use-trailing-return-type,
+          -modernize-use-nodiscard,
+          -cppcoreguidelines-avoid-magic-numbers,
+          -readability-magic-numbers,
+          -bugprone-easily-swappable-parameters
+        version: '11'
         files-changed-only: true
+        lines-changed-only: true
+        ignore: 'build/*,extern/*'
+        database: 'compile_commands.json'
+        extra-args: '-std=c++11'
 
     - name: Fail fast?!
       if: steps.linter.outputs.checks-failed > 0
