@@ -27,22 +27,19 @@ int hashTable::hash(const std::string &key){
 
 int hashTable::findPos(const std::string &key){
     unsigned int pos = hash(key);
-    unsigned int start = pos;
 
-    while (data[pos].isOccupied)
-    {
-        if (data[pos].key == key){
+    while (true){
+
+        if(!data[pos].isOccupied){ 
+            return -1;
+        }
+        else if (data[pos].key == key && !data[pos].isDeleted){ 
             return pos;
         }
-        
-        pos = (pos + 1) % capacity;
 
-        if (pos == start){
-            break;
-        }
+        pos++;
+        pos %= capacity; 
     }
-    
-    return -1;
 
 }
 
@@ -54,8 +51,8 @@ int hashTable::insert(const std::string &key, void *pv) {
     }
 
     int pos = findPos(key);
-    if (pos != -1 && data[pos].isOccupied && data[pos].key == key) {
-        return 1;  // Key already exists
+    if (pos != -1 && data[pos].isOccupied && !data[pos].isDeleted && data[pos].key == key) {
+        return 1;
     }
 
     // Insert at the found position or the next available slot
@@ -68,6 +65,7 @@ int hashTable::insert(const std::string &key, void *pv) {
 
     data[pos].key = key;
     data[pos].isOccupied = true;
+    data[pos].isDeleted = false;
     data[pos].pv = pv;
     filled++;
 
@@ -83,7 +81,7 @@ bool hashTable::rehash() {
     unsigned int new_size_min = capacity * 2; // Double the current capacity
     unsigned int new_prime = getPrime(new_size_min);
 
-    std::vector<hashItem> old_data = std::move(data);
+    std::vector<hashItem> old_data = data;
     
     // Reset the hash table
     data.clear();
@@ -91,14 +89,9 @@ bool hashTable::rehash() {
     capacity = new_prime;
     data.resize(capacity);
 
-    for (const hashItem &item : old_data) {
-        if (item.isOccupied) {
-            int result = insert(item.key, item.pv);
-            if (result != 0) {
-
-                data = std::move(old_data);
-                return false;
-            }
+    for (hashItem item: old_data) {
+        if (item.isOccupied && !item.isDeleted) {
+            insert(item.key, item.pv);
         }
     }
 
@@ -113,38 +106,39 @@ bool hashTable::rehash() {
 void *hashTable::getPointer(const std::string &key, bool *b) {
     unsigned int pos = findPos(key);
     
-    if (pos == -1 || data[pos].isDeleted) {
-        if (b != nullptr) {
-            *b = false;
-        }
+    if (pos == -1){
+        *b = false;
         return nullptr;
     }
-    
-    if (b != nullptr) {
+    else{ 
         *b = true;
+        return data[pos].pv;
     }
-    return data[pos].pv;
+
 }
 
 int hashTable::setPointer(const std::string &key, void *pv) {
     unsigned int pos = findPos(key);
     
-    if (pos == -1 || data[pos].isDeleted) {
+    if (pos == -1) {
         return 1;  // Key not found
     }
+    else {
+        data[pos].pv = pv;
+        return 0;  // Success
+    }
     
-    data[pos].pv = pv;
-    return 0;  // Success
 }
 
 bool hashTable::remove(const std::string &key) {
     unsigned int pos = findPos(key);
     
-    if (pos == -1 || data[pos].isDeleted) {
+    if (pos == -1) {
         return false;  // Key not found
+    } 
+    else {
+        data[pos].isDeleted = true;
+        return true;
     }
-    
-    // Lazy deletion
-    data[pos].isDeleted = true;
-    return true;
+
 }

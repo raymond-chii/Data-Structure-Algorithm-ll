@@ -82,12 +82,11 @@ private:
             std::string id;
             int key;
             void *pData;
-
             node() = default;
     };
 
     
-    hashTable map;
+    hashTable mapping;
 
     std::vector<node> data;
     void percolateUp(int currentPos);
