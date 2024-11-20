@@ -89,9 +89,9 @@ bool hashTable::rehash() {
     capacity = new_prime;
     data.resize(capacity);
 
-    for (hashItem item : old_data) {
+    for (hashItem item: old_data) {
         if (item.isOccupied && !item.isDeleted) {
-            int result = insert(item.key, item.pv);
+            insert(item.key, item.pv);
         }
     }
 

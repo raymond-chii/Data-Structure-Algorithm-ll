@@ -30,30 +30,33 @@ int heap::insert(const std::string &id, int key, void *pv){
     
 };
 
-int heap::deleteMin(std::string *pId, int *pKey, void *ppData){
-    if(currentPos <= 1){
-        return 1;
+int heap::deleteMin(std::string *pId, int *pKey, void *ppData) {
+    if(currentPos <= 1) {
+        return 1;  // Empty heap
     }
-    else{
-        if(pId){
-            *pId = data[1].id;
-        }
-        if(pKey){
-            *pKey = data[1].key;
-        }
-        if(ppData){
-            *(static_cast<void **> (ppData)) = data[1].pData;
-        }
-
-        mapping.remove(data[1].id);
-        currentPos--;
+    
+    // Save min element's data before modifications
+    if(pId) {
+        *pId = data[1].id;
+    }
+    if(pKey) {
+        *pKey = data[1].key;
+    }
+    if(ppData) {
+        *(static_cast<void **>(ppData)) = data[1].pData;
+    }
+    
+    mapping.remove(data[1].id);
+    currentPos--;
+    
+    if(currentPos > 1) {  // If heap not empty after deletion
         data[1] = data[currentPos];
         mapping.setPointer(data[currentPos].id, &data[1]);
         percolateDown(1);
-
-        return 0;
     }
-};
+    
+    return 0;
+}
 
 int heap::setKey(const std::string &id, int key){
     
@@ -102,10 +105,10 @@ int heap::remove(const std::string &id, int *pKey, void *ppData){
         *pn = data[currentPos];
         mapping.setPointer(data[currentPos].id, pn);
 
-        if(data[currentPos].key > deletedKey){
+        if((*pn).key > deletedKey){
             percolateUp(getPos(pn));
         } 
-        else if(data[currentPos].key < deletedKey){
+        else if((*pn).key < deletedKey){
             percolateDown(getPos(pn));
         }
 
@@ -115,18 +118,28 @@ int heap::remove(const std::string &id, int *pKey, void *ppData){
 
 void heap::percolateDown(int pos) {
     node temp = data[pos];
-    int size = currentPos - 1;
     
-    for (int left = pos * 2; left <= size; pos = left, left = pos * 2) {
+    while (2 * pos < currentPos) {  // While there's at least a left child
+        int left = 2 * pos;
         int right = left + 1;
-        int child = (left == size || data[left].key < data[right].key) ? left : right;
+        int smallest = left;
         
-        if (temp.key <= data[child].key) break;
+        // Only compare with right child if it exists
+        if (right < currentPos && data[right].key < data[left].key) {
+            smallest = right;
+        }
         
-        data[pos] = data[child];
+        if (temp.key <= data[smallest].key) {
+            break;  // Heap property satisfied
+        }
+        
+        // Move smaller child up
+        data[pos] = data[smallest];
         mapping.setPointer(data[pos].id, &data[pos]);
+        pos = smallest;
     }
     
+    // Place temp in final position
     data[pos] = temp;
     mapping.setPointer(data[pos].id, &data[pos]);
 }
