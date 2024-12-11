@@ -2,9 +2,77 @@
 #include <fstream>
 #include <string>
 
+bool Matrix[1000][1000] = {false};
+
 std::string mergeStrings(std::string line1, std::string line2, std::string line3) {
-    std::string result = line1 + " " + line2 + " " + line3;
-    return result;
+
+    memset(Matrix, false, sizeof(Matrix));
+
+    int len1 = line1.length();
+    int len2 = line2.length();
+    int len3 = line3.length();
+
+    if((len1 + len2) >len3){
+        return "*** NOT A MERGE ***";
+    }
+
+    for (int i = 0; i < len1; i++){
+        for (int j = 0; j < len2; j++){
+            if(line1[i] == line2[j]){
+
+                Matrix[i][j] = true;
+
+            } else if (i == 0 && line2[j-1] == line3[j-1]){
+                
+                Matrix[i][j] = Matrix[i][j-1];
+                
+            } else if (j == 0 && line1[i-1] == line3[i-1]){
+                
+                Matrix[i][j] = Matrix[i-1][j];
+
+            } else {
+                if(line1[i-1] == line3[i+j-1] && line2[j-1] == line3[i+j-1]){
+
+                    Matrix[i][j] = Matrix[i-1][j] || Matrix[i][j-1];
+
+                } else if(line1[i-1] == line3[i+j-1] && line2[j-1] != line3[i+j-1]){
+                    
+                    Matrix[i][j] = Matrix[i-1][j];
+
+                } else if(line1[i-1] != line3[i+j-1] && line2[j-1] == line3[i+j-1]){
+
+                    Matrix[i][j] = Matrix[i][j-1];
+
+                }
+            }
+        }
+    }
+
+    if (Matrix[len1][len2]) {
+        std::string result;
+        int i = len1, j = len2;
+
+        while (i > 0 || j > 0) {
+            if (i > 0 && Matrix[i-1][j] && line1[i-1] == line3[i+j-1]) {
+                result += std::toupper(line1[i-1]);
+                i--;
+            } else if (j > 0 && Matrix[i][j-1] && line2[j-1] == line3[i+j-1]) {
+                result += line2[j-1];
+                j--;
+            }
+        }
+
+        std::reverse(result.begin(), result.end());
+        return result;
+    } else {
+        return "*** NOT A MERGE ***";
+    }
+        
+
+    
+    
+
+
 }
 
 int main() {
